@@ -828,10 +828,14 @@ public abstract class EC2Cloud extends Cloud {
     }
 
     public static void log(Logger logger, Level level, TaskListener listener, String message, Throwable exception) {
-        logger.log(level, message, exception);
+        if (exception == null) {
+            logger.log(level, message);
+        } else {
+            logger.log(level, message, exception);
+            message += " Exception: " + exception;
+        }
+
         if (listener != null) {
-            if (exception != null)
-                message += " Exception: " + exception;
             LogRecord lr = new LogRecord(level, message);
             PrintStream printStream = listener.getLogger();
             printStream.print(sf.format(lr));
