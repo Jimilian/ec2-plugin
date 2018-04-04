@@ -96,6 +96,7 @@ public abstract class EC2AbstractSlave extends Slave {
     public List<EC2Tag> tags;
     public final String cloudName;
     public AMITypeData amiType;
+    private String instanceType = null;
 
     // Temporary stuff that is obtained live from EC2
     public transient String publicDNS;
@@ -148,6 +149,7 @@ public abstract class EC2AbstractSlave extends Slave {
         this.launchTimeout = launchTimeout;
         this.amiType = amiType;
         readResolve();
+        fetchLiveInstanceData(true);
     }
 
     @Override
@@ -417,7 +419,7 @@ public abstract class EC2AbstractSlave extends Slave {
      * Much of the EC2 data is beyond our direct control, therefore we need to refresh it from time to time to ensure we
      * reflect the reality of the instances.
      */
-    protected void fetchLiveInstanceData(boolean force) throws AmazonClientException {
+    private void fetchLiveInstanceData(boolean force) throws AmazonClientException {
         /*
          * If we've grabbed the data recently, don't bother getting it again unless we are forced
          */
@@ -448,6 +450,7 @@ public abstract class EC2AbstractSlave extends Slave {
         privateDNS = i.getPrivateIpAddress();
         createdTime = i.getLaunchTime().getTime();
         tags = new LinkedList<EC2Tag>();
+        instanceType = i.getInstanceType();
 
         for (Tag t : i.getTags()) {
             tags.add(new EC2Tag(t.getKey(), t.getValue()));
@@ -502,6 +505,11 @@ public abstract class EC2AbstractSlave extends Slave {
     public String getPrivateDNS() {
         fetchLiveInstanceData(false);
         return privateDNS;
+    }
+
+    public String getInstanceType() {
+        fetchLiveInstanceData(false);
+        return instanceType;
     }
 
     public List<EC2Tag> getTags() {
