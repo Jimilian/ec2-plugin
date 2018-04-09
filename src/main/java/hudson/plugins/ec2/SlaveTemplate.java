@@ -155,10 +155,10 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
 
         if(StringUtils.isNotBlank(remoteAdmin) || StringUtils.isNotBlank(jvmopts) || StringUtils.isNotBlank(tmpDir)){
             LOGGER.log(Level.FINE, "As remoteAdmin, jvmopts or tmpDir is not blank, we must ensure the user has RUN_SCRIPTS rights.");
-            Jenkins j = Jenkins.getInstance();
-            if(j != null){
-                j.checkPermission(Jenkins.RUN_SCRIPTS);
-            }
+//            Jenkins j = Jenkins.getInstance();
+//            if(j != null){
+//                j.checkPermission(Jenkins.RUN_SCRIPTS);
+//            }
         }
 
         this.ami = ami;
@@ -1010,8 +1010,7 @@ public class SlaveTemplate implements Describable<SlaveTemplate> {
      * Initializes data structure that we don't persist.
      */
     protected Object readResolve() {
-        Jenkins.getInstance().checkPermission(Jenkins.RUN_SCRIPTS);
-
+//        Jenkins.getInstance().checkPermission(Jenkins.RUN_SCRIPTS);
         labelSet = Label.parse(labels);
         securityGroupSet = parseSecurityGroups();
 
